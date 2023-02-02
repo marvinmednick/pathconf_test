@@ -1,0 +1,22 @@
+[package]
+name = "enum_dict"
+version = "0.0.0"
+autotests = false
+edition = "2021"
+publish = false
+
+[lib]
+proc-macro = true
+
+[[test]]
+name = "tests"
+path = "tests/progress.rs"
+
+[dev-dependencies]
+trybuild = { version = "1.0.72", features = ["diff"] }
+
+[dependencies]
+quote = "*"
+syn = { version = "*", features = ["full","extra-traits"] }
+proc-macro2 = "*"
+libc = "*"
