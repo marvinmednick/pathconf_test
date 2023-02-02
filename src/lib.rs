@@ -401,14 +401,9 @@ pub fn derive_enum_to_dict(input: proc_macro::TokenStream) -> proc_macro::TokenS
     eprintln!("Entries is {:#?}",entries);
 
     quote::quote!{
-        pub trait enumToDict {
-            fn variant_list();
-        }
-        impl enumToDict for #struct_name {
-            fn variant_list() {
+            pub fn variant_list() {
                 #(#entries)*
             }
-        }
     }.into()
 
 }
