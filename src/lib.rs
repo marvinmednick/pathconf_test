@@ -343,49 +343,6 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     return output
 }
 
-
-#[proc_macro_derive(EnumToDict)]
-pub fn derive_enum_to_dict(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-//    eprintln!("Input {:#?}",input);
-    let parsed_input : DeriveInput = syn::parse(input).unwrap();
-    let parsed_copy = parsed_input.clone();
-//    eprintln!("Parsed Input {:#?}",parsed_input);
-
-    let struct_name = parsed_input.ident;
-    let _builder_name = quote::format_ident!("{}Builder",struct_name);
-
-
-    // get the list of fields from the structure
-    let variants = if let syn::Data::Enum(
-        syn::DataEnum {
-                ref variants, ..
-                }
-    ) = parsed_copy.data { variants }
-    else {
-        // this dervive (builder) only supports structures at this time
-        unimplemented!();
-    };
-
-    let mut entries = Vec::<proc_macro2::TokenStream>::new();
-    for v in variants {
-        let key = format!("{}",v.ident);
-        let key_ident = quote::format_ident!("{}",v.ident);
-        
-/*        let new_entry = if let Some((_eq, exp)) = v.discriminant.clone() {
-             Some(exp.into_token_stream()) 
-        }
-        else {
-             None
-       }; */
-
-        let new_entry = quote::quote! {
-            println!("{} : {}", #key, #key_ident as u32);
-        };
-
-        entries.push(new_entry);
-//        eprintln!("Variant {:?} {:?}",v.ident, v.discriminant);
-    }
-
 // What this code needs to is:
 //   create a function that returns a dict (or temporarity a Hashmap) where
 //   the key is the String of the pathconf enum, and the value is the Value of the num
@@ -410,13 +367,48 @@ pub fn derive_enum_to_dict(input: proc_macro::TokenStream) -> proc_macro::TokenS
 //    key = "EnumVariat: (as a string)
 //    value = Enum::EnumVariant as u32
 //
+
+
+#[proc_macro_derive(EnumToDict)]
+pub fn derive_enum_to_dict(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let parsed_input : DeriveInput = syn::parse(input).unwrap();
+    let parsed_copy = parsed_input.clone();
+
+    let struct_name = parsed_input.ident;
+
+    // get the list of fields from the structure
+    let variants = if let syn::Data::Enum(
+        syn::DataEnum {
+                ref variants, ..
+                }
+    ) = parsed_copy.data { variants }
+    else {
+        // this dervive (builder) only supports structures at this time
+        unimplemented!();
+    };
+
+    let mut entries = Vec::<proc_macro2::TokenStream>::new();
+    for v in variants {
+        let key = format!("{}",v.ident);
+        let key_ident = quote::format_ident!("{}",v.ident);
+        
+        let new_entry = quote::quote! {
+            println!("{} : {}", #key, #struct_name::#key_ident as u32);
+        };
+
+        entries.push(new_entry);
+    }
     eprintln!("Entries is {:#?}",entries);
 
-//    eprintln!("-----------------------------------------");
-//    eprintln!("Variants\n{:#?}",variants);
-
     quote::quote!{
-        pub fn variant_list() {
+        pub trait enumToDict {
+            fn variant_list();
+        }
+        impl enumToDict for #struct_name {
+            fn variant_list() {
+                #(#entries)*
+            }
         }
     }.into()
+
 }
