@@ -42,7 +42,7 @@
 //   - Joining together the type name + "Builder" to make the builder's name:
 //     https://docs.rs/syn/1.0/syn/struct.Ident.html
 
-use derive_builder::Builder;
+use enum_dict::Builder;
 
 #[derive(Builder)]
 pub struct Command {
@@ -50,7 +50,6 @@ pub struct Command {
     args: Vec<String>,
     env: Vec<String>,
     current_dir: String,
-
 }
 
 fn main() {

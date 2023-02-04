@@ -64,7 +64,7 @@ fn main() {
     builder.current_dir("..".to_owned());
 
     let _x = TestConfVar::PC_LINK_MAX;
-    variant_list();
+    testconfvar_names();
     let command = builder.build().unwrap();
     assert_eq!(command.executable, "cargo");
     //    println!("{:#?}", TestConfVar::PC_FILESIZEBITS as u32);
