@@ -11,22 +11,7 @@
 //         }
 //     }
 
-use enum_dict::{Builder, EnumToDict};
-
-#[derive(Builder)]
-pub struct Command {
-    executable: String,
-    args: Vec<String>,
-    env: Vec<String>,
-    current_dir: String,
-}
-
-#[derive(Debug)]
-enum MTest {
-    OptA = 12,
-    OptB = 13,
-    OptC = 3,
-}
+use enum_dict::EnumToDict;
 
 #[repr(i32)]
 #[allow(non_camel_case_types)]
@@ -57,21 +42,10 @@ pub enum TestConfVar {
 }
 
 fn main() {
-    let mut builder = Command::builder();
-    builder.executable("cargo".to_owned());
-    builder.args(vec!["build".to_owned(), "--release".to_owned()]);
-    builder.env(vec![]);
-    builder.current_dir("..".to_owned());
-
     let _x = TestConfVar::PC_LINK_MAX;
     testconfvar_names();
-    let command = builder.build().unwrap();
-    assert_eq!(command.executable, "cargo");
-    //    println!("{:#?}", TestConfVar::PC_FILESIZEBITS as u32);
+
     println!("{:#?}", libc::_PC_FILESIZEBITS);
     println!("{:#?}", libc::_PC_LINK_MAX);
     println!("{:#?}", libc::_PC_MAX_CANON);
-    println!("{:#?}", MTest::OptA as u32);
-    println!("{:#?}", MTest::OptB as u32);
-    println!("{:#?}", MTest::OptC as u32);
 }
