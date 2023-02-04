@@ -1,4 +1,5 @@
-use syn::DeriveInput;
+use proc_macro2::TokenStream;
+use syn::{DeriveInput, Result};
 
 // What this code needs to is:
 //   create a function that returns a dict (or temporarity a Hashmap) where
@@ -29,10 +30,10 @@ use syn::DeriveInput;
 pub fn derive_enum_to_dict(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let parsed_input: DeriveInput = syn::parse(input).unwrap();
 
-    impl_enum_to_dict(parsed_input)
+    impl_enum_to_dict(parsed_input).unwrap().into()
 }
 
-fn impl_enum_to_dict(input: DeriveInput) -> proc_macro::TokenStream {
+fn impl_enum_to_dict(input: DeriveInput) -> Result<TokenStream> {
     let struct_name = input.ident;
     let struct_string_name = format!("{struct_name}");
     let dict_name = quote::format_ident!("{}_names", struct_string_name.to_lowercase());
@@ -58,10 +59,10 @@ fn impl_enum_to_dict(input: DeriveInput) -> proc_macro::TokenStream {
     }
     //    eprintln!("Entries is {:#?}", entries);
 
-    quote::quote! {
+    let ret = quote::quote! {
             pub fn #dict_name() {
                 #(#entries)*
             }
-    }
-    .into()
+    };
+    Ok(ret)
 }
